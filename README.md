@@ -16,7 +16,10 @@ The goal of this project is to predict the **Math Score** of students based on v
 ---
 
 ## 📂 Project Structure & Architecture
+
 The project follows a production-grade modular architecture split into independent, reusable components:
+
+```text
 ├── artifacts/               # Generated data splits and serialized pickle files
 ├── logs/                    # Automated runtime execution logs for debugging
 ├── notebook/                # Jupyter Notebooks for EDA and initial model prototyping
@@ -26,7 +29,7 @@ The project follows a production-grade modular architecture split into independe
 │   │   ├── data_ingestion.py      # Script to load and split raw data
 │   │   ├── data_transformation.py # Custom preprocessors, pipelines, and scaling
 │   │   └── model_trainer.py       # Model training, evaluation, and tuning
-│   ├── pipeline/            # execution workflows
+│   ├── pipeline/            # Execution workflows
 │   │   ├── __init__.py
 │   │   ├── predict_pipeline.py    # Custom pipeline for real-time user input prediction
 │   │   └── train_pipeline.py      # Triggers the complete training sequence
