@@ -1,7 +1,10 @@
+
+import sys
 from flask import Flask,request,render_template
 import numpy as np
 import pandas as pd
 
+from src.exception import CustomException
 from sklearn.preprocessing import StandardScaler
 from src.pipelines.predict_pipeline import CustomData,PredictPipeline
 
@@ -17,10 +20,11 @@ def index():
 
 @app.route('/predictdata',methods=['GET','POST'])
 def predict_datapoint():
-    if request.method=='GET':
-        return render_template('home.html')
-    else:
-        data=CustomData(
+    try:
+        if request.method=='GET':
+         return render_template('home.html')
+        else:
+         data=CustomData(
             gender=request.form.get('gender'),
             race_ethnicity=request.form.get('ethnicity'),
             parental_level_of_education=request.form.get('parental_level_of_education'),
@@ -30,17 +34,22 @@ def predict_datapoint():
             reading_score=float(request.form.get('reading_score'))
 
         )
-        pred_df=data.get_data_as_data_frame()
-        print(pred_df)
-        print("Before Prediction")
+         pred_df=data.get_data_as_data_frame()
+         print(pred_df)
+         print("Before Prediction")
 
-        predict_pipeline=PredictPipeline()
-        print("Mid Prediction")
-        results=predict_pipeline.predict(pred_df)
-        print("After Prediction:", results[0])
+         predict_pipeline=PredictPipeline()
+         print("Mid Prediction")
+         results=predict_pipeline.predict(pred_df)
+         print("After Prediction:", results[0])
     
-        # return render_template('home.html',results=results[0])
-        return {"prediction": round(results[0],2)}
+         # return render_template('home.html',results=results[0])
+         return {"prediction": round(results[0],2)}
+    except Exception as e:
+       print("Backend Error caught:", str(e))
+            # Raise karne ke bajay direct return karo taaki JS ise handle kar sake
+       return {"prediction": f"Backend Error: {str(e)}"}
+   
     
     
 
