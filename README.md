@@ -1,12 +1,22 @@
-# End-to-End Machine Learning Project with Production Deployment
+# 📊 Student Exam Performance Prediction Project
 
-A comprehensive, modular End-to-End Machine Learning pipeline that automates the entire lifecycle from data ingestion to model deployment. Built using software engineering best practices, this project handles raw data, processes it through custom transformation pipelines, trains multiple algorithms to select the best performer, and serves predictions via a responsive Flask web interface hosted on Render.
+A comprehensive, modular End-to-End Machine Learning pipeline that automates the entire lifecycle from data ingestion to model deployment. Built using software engineering best practices, this project handles raw student data, processes it through custom transformation pipelines, trains multiple regression algorithms to select the best performer, and serves math score predictions via a responsive Flask web interface hosted on Render.
+
+## 🎯 Project Overview & Objective
+The goal of this project is to predict the **Math Score** of students based on various demographic and exam-related features. By analyzing these factors, the model helps identify key variables that significantly impact a student's academic performance in exams.
+
+### 🔑 Key Features Handled:
+* **Gender:** Male / Female
+* **Race/Ethnicity:** Groups (A, B, C, D, E)
+* **Parental Level of Education:** High School, Associate's Degree, Bachelor's, Master's, etc.
+* **Lunch Type:** Standard vs. Free/Reduced (acts as an economic indicator)
+* **Test Preparation Course:** Completed vs. None
+* **Reading & Writing Scores:** Used to analyze correlation with mathematical performance.
+
+---
 
 ## 📂 Project Structure & Architecture
-
 The project follows a production-grade modular architecture split into independent, reusable components:
-
-```text
 ├── artifacts/               # Generated data splits and serialized pickle files
 ├── logs/                    # Automated runtime execution logs for debugging
 ├── notebook/                # Jupyter Notebooks for EDA and initial model prototyping
@@ -28,3 +38,11 @@ The project follows a production-grade modular architecture split into independe
 ├── Procfile                 # Process file defining production WSGI server for Render
 ├── requirements.txt         # Project dependencies and libraries
 └── README.md                # Project documentation
+
+---
+
+## 🚀 How to Run Locally
+
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/Tinak2005/ML-Project.git](https://github.com/Tinak2005/ML-Project.git)
