@@ -1,51 +1,141 @@
 # 📊 Student Exam Performance Prediction Project
 
-A comprehensive, modular End-to-End Machine Learning pipeline that automates the entire lifecycle from data ingestion to model deployment. Built using software engineering best practices, this project handles raw student data, processes it through custom transformation pipelines, trains multiple regression algorithms to select the best performer, and serves math score predictions via a responsive Flask web interface hosted on Render.
+An End-to-End Machine Learning project designed to predict a student's **Exam Score** based on academic, lifestyle, motivational, and environmental factors.
 
-## 🎯 Project Overview & Objective
-The goal of this project is to predict the **Math Score** of students based on various demographic and exam-related features. By analyzing these factors, the model helps identify key variables that significantly impact a student's academic performance in exams.
+The project goes beyond simple score prediction by performing **model-based what-if analysis**. It tests realistic changes in relevant input factors using the trained Machine Learning model and identifies the changes with the highest potential positive impact on the predicted exam score.
 
-### 🔑 Key Features Handled:
-* **Gender:** Male / Female
-* **Race/Ethnicity:** Groups (A, B, C, D, E)
-* **Parental Level of Education:** High School, Associate's Degree, Bachelor's, Master's, etc.
-* **Lunch Type:** Standard vs. Free/Reduced (acts as an economic indicator)
-* **Test Preparation Course:** Completed vs. None
-* **Reading & Writing Scores:** Used to analyze correlation with mathematical performance.
+The application follows a modular Machine Learning architecture and provides predictions through a responsive Flask web interface.
 
 ---
 
-## 📂 Project Structure & Architecture
+## 🎯 Project Overview
 
-The project follows a production-grade modular architecture split into independent, reusable components:
+The objective of this project is to build a Machine Learning system that can:
+
+- Predict a student's expected exam score.
+- Process numerical and categorical student-related features.
+- Train and compare multiple regression models.
+- Select the best-performing model.
+- Evaluate the final model using regression metrics.
+- Provide predictions through a Flask web application.
+- Identify potential improvement opportunities using model-based what-if analysis.
+
+---
+
+## ✨ Key Features
+
+### 🔹 Exam Score Prediction
+
+The trained Machine Learning model predicts the expected exam score based on student-related input features.
+
+### 🔹 Model-Based Improvement Analysis
+
+The application performs model-based analysis instead of relying on simple hardcoded suggestions.
+
+The system:
+
+1. Generates the original prediction.
+2. Modifies one relevant factor within a realistic range.
+3. Sends the modified input through the same preprocessing pipeline.
+4. Generates a new prediction using the trained model.
+5. Calculates the difference between the predictions.
+6. Repeats the process for multiple relevant factors.
+7. Filters meaningful positive improvements.
+8. Ranks the opportunities according to their predicted impact.
+
+This provides data-driven improvement opportunities based on the behavior of the trained model.
+
+### 🔹 Responsive Web Interface
+
+The Flask application provides:
+
+- Organized input sections.
+- Responsive form layout.
+- Smooth transitions and hover effects.
+- Predicted exam score.
+- Performance category.
+- Model-based improvement opportunities.
+- Current value → recommended value comparison.
+- Potential predicted score impact.
+
+---
+
+## 🔑 Input Features
+
+The model uses **16 input features**.
+
+### 📚 Academic and Study Factors
+
+- Hours Studied
+- Attendance
+- Previous Scores
+- Tutoring Sessions
+
+### 🌙 Lifestyle Factors
+
+- Sleep Hours
+- Physical Activity
+
+### 🧠 Motivation and Learning Environment
+
+- Motivation Level
+- Access to Resources
+- Parental Involvement
+- Internet Access
+- Teacher Quality
+- Extracurricular Activities
+- Peer Influence
+
+### 👨‍👩‍👧 Family and Background Factors
+
+- Parental Education Level
+- School Type
+- Family Income
+
+---
+
+## 🤖 Machine Learning Architecture
 
 ```text
-├── artifacts/               # Generated data splits and serialized pickle files
-├── logs/                    # Automated runtime execution logs for debugging
-├── notebook/                # Jupyter Notebooks for EDA and initial model prototyping
-├── src/                     # Core application source code
-│   ├── components/          # Pipeline building blocks
-│   │   ├── __init__.py
-│   │   ├── data_ingestion.py      # Script to load and split raw data
-│   │   ├── data_transformation.py # Custom preprocessors, pipelines, and scaling
-│   │   └── model_trainer.py       # Model training, evaluation, and tuning
-│   ├── pipeline/            # Execution workflows
-│   │   ├── __init__.py
-│   │   ├── predict_pipeline.py    # Custom pipeline for real-time user input prediction
-│   │   └── train_pipeline.py      # Triggers the complete training sequence
-│   ├── exception.py         # Custom robust exception handling framework
-│   ├── logger.py            # Custom logging setup to track execution flow
-│   └── utils.py             # Global utility functions (e.g., model saving/loading)
-├── templates/               # HTML layout files for the Flask frontend
-├── app.py                   # Flask application entry point
-├── Procfile                 # Process file defining production WSGI server for Render
-├── requirements.txt         # Project dependencies and libraries
-└── README.md                # Project documentation
-
----
-
-## 🚀 How to Run Locally
-
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/Tinak2005/ML-Project.git](https://github.com/Tinak2005/ML-Project.git)
+Raw Student Data
+        │
+        ▼
+Data Ingestion
+        │
+        ▼
+Data Transformation
+        │
+        ├── Numerical Feature Processing
+        │
+        └── Categorical Feature Processing
+        │
+        ▼
+Train-Test Split
+        │
+        ▼
+Multiple Model Training
+        │
+        ▼
+Model Evaluation
+        │
+        ├── R² Score
+        ├── MAE
+        └── RMSE
+        │
+        ▼
+Best Model Selection
+        │
+        ▼
+Saved Model + Preprocessor
+        │
+        ▼
+Flask Prediction Pipeline
+        │
+        ▼
+Exam Score Prediction
+        │
+        ▼
+Model-Based What-If Analysis
+        │
+        ▼
+Improvement Opportunities
