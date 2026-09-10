@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor, GradientB
 from xgboost import XGBRegressor
 from catboost import CatBoostRegressor
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
 from src.logger import logging
 from src.exception import CustomException
@@ -43,6 +43,9 @@ class ModelTrainer:
             }
 
             model_report:dict= evaluate_models(X_train=X_train,y_train=y_train, X_test=X_test, y_test=y_test, models=models)
+            print("\nModel Performance Report:")
+            for name, score in model_report.items():
+              print(f"{name}: {score:.4f}")
 
             best_model_score = max(sorted(model_report.values()))
 
@@ -61,10 +64,20 @@ class ModelTrainer:
                 obj=best_model
             )
 
-            predicted=best_model.predict(X_test)
+            predicted = best_model.predict(X_test)
+            print("\nSample Actual vs Predicted Values:")
+            for actual, prediction in zip(y_test[:10], predicted[:10]):
+             print(f"Actual: {actual:.2f} | Predicted: {prediction:.2f}")
+            r2_square = r2_score(y_test, predicted)
+            mae = mean_absolute_error(y_test, predicted)
+            rmse = mean_squared_error(y_test, predicted) ** 0.5
 
-            r2_square=r2_score(y_test,predicted)
-           
+            print("\nFinal Best Model Evaluation:")
+            print(f"Best Model: {best_model_name}")
+            print(f"R² Score: {r2_square:.4f}")
+            print(f"MAE: {mae:.4f}")
+            print(f"RMSE: {rmse:.4f}")
+
             return r2_square
 
         except Exception as e:

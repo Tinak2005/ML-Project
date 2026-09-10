@@ -20,7 +20,7 @@ class DataIngestion:
             logging.info("Starting data ingestion process")
 
             # Example: read CSV file (replace with your dataset path)
-            df = pd.read_csv("notebook/data/stud.csv")
+            df = pd.read_csv("notebook/data/studentperformancefactors.csv")
             logging.info("Dataset loaded successfully")
 
             # Train-test split

@@ -1,60 +1,216 @@
-
 import sys
-from flask import Flask,request,render_template
-import numpy as np
-import pandas as pd
+
+from flask import Flask, request, render_template
 
 from src.exception import CustomException
-from sklearn.preprocessing import StandardScaler
-from src.pipelines.predict_pipeline import CustomData,PredictPipeline
+from src.pipelines.predict_pipeline import (
+    CustomData,
+    PredictPipeline
+)
 
-application=Flask(__name__)
 
-app=application
+application = Flask(__name__)
+app = application
 
-## Route for a home page
+
+# ==========================================
+# HOME PAGE
+# ==========================================
 
 @app.route('/')
 def index():
-    return render_template('index.html') 
 
-@app.route('/predictdata',methods=['GET','POST'])
+    return render_template('home.html')
+
+
+# ==========================================
+# PREDICTION ROUTE
+# ==========================================
+
+@app.route('/predictdata', methods=['GET', 'POST'])
 def predict_datapoint():
+
     try:
-        if request.method=='GET':
-         return render_template('home.html')
+
+        # ----------------------------------
+        # GET REQUEST
+        # ----------------------------------
+
+        if request.method == 'GET':
+
+            return render_template('home.html')
+
+
+        # ----------------------------------
+        # POST REQUEST
+        # ----------------------------------
+
         else:
-         data=CustomData(
-            gender=request.form.get('gender'),
-            race_ethnicity=request.form.get('ethnicity'),
-            parental_level_of_education=request.form.get('parental_level_of_education'),
-            lunch=request.form.get('lunch'),
-            test_preparation_course=request.form.get('test_preparation_course'),
-            writing_score=float(request.form.get('writing_score')),
-            reading_score=float(request.form.get('reading_score'))
 
-        )
-         pred_df=data.get_data_as_data_frame()
-         print(pred_df)
-         print("Before Prediction")
+            # Create CustomData object
+            data = CustomData(
 
-         predict_pipeline=PredictPipeline()
-         print("Mid Prediction")
-         results=predict_pipeline.predict(pred_df)
-         print("After Prediction:", results[0])
-    
-         # return render_template('home.html',results=results[0])
-         return {"prediction": round(results[0],2)}
+                # ==========================
+                # NUMERICAL FEATURES
+                # ==========================
+
+                hours_studied=float(
+                    request.form.get('hours_studied')
+                ),
+
+                attendance=float(
+                    request.form.get('attendance')
+                ),
+
+                previous_scores=float(
+                    request.form.get('previous_scores')
+                ),
+
+                tutoring_sessions=float(
+                    request.form.get('tutoring_sessions')
+                ),
+
+                sleep_hours=float(
+                    request.form.get('sleep_hours')
+                ),
+
+                physical_activity=float(
+                    request.form.get('physical_activity')
+                ),
+
+
+                # ==========================
+                # CATEGORICAL FEATURES
+                # ==========================
+
+                motivation_level=request.form.get(
+                    'motivation_level'
+                ),
+
+                access_to_resources=request.form.get(
+                    'access_to_resources'
+                ),
+
+                parental_involvement=request.form.get(
+                    'parental_involvement'
+                ),
+
+                internet_access=request.form.get(
+                    'internet_access'
+                ),
+
+                teacher_quality=request.form.get(
+                    'teacher_quality'
+                ),
+
+                parental_education_level=request.form.get(
+                    'parental_education_level'
+                ),
+
+                school_type=request.form.get(
+                    'school_type'
+                ),
+
+                extracurricular_activities=request.form.get(
+                    'extracurricular_activities'
+                ),
+
+                peer_influence=request.form.get(
+                    'peer_influence'
+                ),
+
+                family_income=request.form.get(
+                    'family_income'
+                )
+            )
+
+
+            # ==================================
+            # CONVERT USER INPUT TO DATAFRAME
+            # ==================================
+
+            pred_df = data.get_data_as_data_frame()
+
+
+            print("\nInput Data:")
+            print(pred_df)
+
+
+            # ==================================
+            # INITIALIZE PREDICTION PIPELINE
+            # ==================================
+
+            predict_pipeline = PredictPipeline()
+
+
+            # ==================================
+            # GET ORIGINAL PREDICTION
+            # ==================================
+
+            results = predict_pipeline.predict(
+                pred_df
+            )
+
+
+            prediction = round(
+                float(results[0]),
+                2
+            )
+
+
+            # ==================================
+            # GET MODEL-BASED RECOMMENDATIONS
+            # ==================================
+
+            recommendations = (
+                predict_pipeline.get_recommendations(
+                    pred_df
+                )
+            )
+
+
+            # ==================================
+            # RETURN JSON RESPONSE
+            # ==================================
+
+            return {
+
+                "prediction": prediction,
+
+                "recommendations": recommendations
+
+            }
+
+
     except Exception as e:
-       print("Backend Error caught:", str(e))
-            # Raise karne ke bajay direct return karo taaki JS ise handle kar sake
-       return {"prediction": f"Backend Error: {str(e)}"}
-   
-    
-    
 
-if __name__=="__main__":
-    app.run(host="0.0.0.0")        
+        print(
+            "Backend Error:",
+            str(e)
+        )
 
 
+        return {
 
+            "prediction": None,
+
+            "recommendations": [],
+
+            "error": str(e)
+
+        }, 500
+
+
+# ==========================================
+# RUN APPLICATION
+# ==========================================
+
+if __name__ == "__main__":
+
+    app.run(
+
+        host="0.0.0.0",
+
+        debug=True
+
+    )
