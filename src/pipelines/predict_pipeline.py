@@ -61,28 +61,29 @@ class PredictPipeline:
 
 
     def get_recommendations(self, features):
-
         """
-        Performs realistic what-if analysis on all features.
+        Performs model-based what-if analysis.
 
-        Each feature is changed individually and the trained
-        ML model predicts the possible score impact.
+        Each adjustable feature is changed individually,
+        and the trained ML model predicts the resulting score.
+        The top three positive scenarios are returned.
         """
 
         try:
 
-            # Baseline prediction
+            # ==========================================
+            # BASELINE PREDICTION
+            # ==========================================
 
             current_prediction = float(
                 self.predict(features)[0]
             )
 
-
-            recommendations = []
+            scenarios = []
 
 
             # ==========================================
-            # REALISTIC SCENARIOS FOR NUMERICAL FEATURES
+            # NUMERICAL SCENARIOS
             # ==========================================
 
             numerical_scenarios = {
@@ -97,7 +98,6 @@ class PredictPipeline:
                         features.iloc[0]["Attendance"] + 5,
                         100
                     ),
-
                     min(
                         features.iloc[0]["Attendance"] + 10,
                         100
@@ -109,13 +109,11 @@ class PredictPipeline:
                     features.iloc[0]["Tutoring_Sessions"] + 2
                 ],
 
-                # Sleep is tested around realistic values
                 "Sleep_Hours": [
                     7,
                     8
                 ],
 
-                # Physical activity tested realistically
                 "Physical_Activity": [
                     1,
                     2,
@@ -125,14 +123,12 @@ class PredictPipeline:
 
 
             # ==========================================
-            # CHECK NUMERICAL FEATURES
+            # TEST NUMERICAL FEATURES
             # ==========================================
 
             for feature, values in numerical_scenarios.items():
 
-                original_value = (
-                    features.iloc[0][feature]
-                )
+                original_value = features.iloc[0][feature]
 
                 best_prediction = current_prediction
                 best_value = original_value
@@ -140,18 +136,11 @@ class PredictPipeline:
 
                 for value in values:
 
-                    # Don't test same value
-
                     if value == original_value:
                         continue
 
 
-                    # Create copy
-
                     test_data = features.copy()
-
-
-                    # Change only one feature
 
                     test_data.loc[
                         test_data.index[0],
@@ -159,90 +148,111 @@ class PredictPipeline:
                     ] = value
 
 
-                    # Model prediction
-
                     new_prediction = float(
                         self.predict(test_data)[0]
                     )
 
 
-                    # Keep best scenario
-
                     if new_prediction > best_prediction:
 
                         best_prediction = new_prediction
-
                         best_value = value
 
 
-                improvement = (
+                predicted_change = (
                     best_prediction
                     - current_prediction
                 )
 
 
-                # Only meaningful improvements
+                if predicted_change >= 0.5:
 
-                if improvement >= 0.5:
-
-                    recommendations.append({
+                    scenarios.append({
 
                         "factor": feature,
 
-                        "current_value":
-                            float(original_value),
+                        "current_value": (
+                            float(original_value)
+                        ),
 
-                        "recommended_value":
-                            float(best_value),
+                        "scenario_value": (
+                            float(best_value)
+                        ),
 
-                        "impact":
-                            round(improvement, 2)
+                        "current_prediction": round(
+                            current_prediction,
+                            2
+                        ),
+
+                        "scenario_prediction": round(
+                            best_prediction,
+                            2
+                        ),
+
+                        "predicted_change": round(
+                            predicted_change,
+                            2
+                        )
 
                     })
 
 
             # ==========================================
-            # CATEGORICAL FEATURES
+            # CATEGORICAL SCENARIOS
             # ==========================================
 
             categorical_scenarios = {
 
-                "Motivation_Level":
-                    ["Low", "Medium", "High"],
+                "Motivation_Level": [
+                    "Low",
+                    "Medium",
+                    "High"
+                ],
 
-                "Access_to_Resources":
-                    ["Low", "Medium", "High"],
+                "Access_to_Resources": [
+                    "Low",
+                    "Medium",
+                    "High"
+                ],
 
-                "Parental_Involvement":
-                    ["Low", "Medium", "High"],
+                "Parental_Involvement": [
+                    "Low",
+                    "Medium",
+                    "High"
+                ],
 
-                "Internet_Access":
-                    ["Yes", "No"],
+                "Internet_Access": [
+                    "Yes",
+                    "No"
+                ],
 
-                "Teacher_Quality":
-                    ["Low", "Medium", "High"],
+                "Teacher_Quality": [
+                    "Low",
+                    "Medium",
+                    "High"
+                ],
 
-                "Extracurricular_Activities":
-                    ["Yes", "No"],
+                "Extracurricular_Activities": [
+                    "Yes",
+                    "No"
+                ],
 
-                "Peer_Influence":
-                    [
-                        "Negative",
-                        "Neutral",
-                        "Positive"
-                    ],
+                "Peer_Influence": [
+                    "Negative",
+                    "Neutral",
+                    "Positive"
+                ]
+
             }
 
 
             # ==========================================
-            # CHECK CATEGORICAL FEATURES
+            # TEST CATEGORICAL FEATURES
             # ==========================================
 
             for feature, values in categorical_scenarios.items():
 
-                original_value = (
-                    features.iloc[0][feature]
-                )
+                original_value = features.iloc[0][feature]
 
                 best_prediction = current_prediction
                 best_value = original_value
@@ -255,9 +265,6 @@ class PredictPipeline:
 
 
                     test_data = features.copy()
-
-
-                    # Change one factor
 
                     test_data.loc[
                         test_data.index[0],
@@ -273,52 +280,56 @@ class PredictPipeline:
                     if new_prediction > best_prediction:
 
                         best_prediction = new_prediction
-
                         best_value = value
 
 
-                improvement = (
+                predicted_change = (
                     best_prediction
                     - current_prediction
                 )
 
 
-                # Meaningful impact only
+                if predicted_change >= 0.5:
 
-                if improvement >= 0.5:
-
-                    recommendations.append({
+                    scenarios.append({
 
                         "factor": feature,
 
-                        "current_value":
-                            original_value,
+                        "current_value": original_value,
 
-                        "recommended_value":
-                            best_value,
+                        "scenario_value": best_value,
 
-                        "impact":
-                            round(improvement, 2)
+                        "current_prediction": round(
+                            current_prediction,
+                            2
+                        ),
+
+                        "scenario_prediction": round(
+                            best_prediction,
+                            2
+                        ),
+
+                        "predicted_change": round(
+                            predicted_change,
+                            2
+                        )
 
                     })
 
 
             # ==========================================
-            # SORT BY HIGHEST IMPACT
+            # RANK SCENARIOS
             # ==========================================
 
-            recommendations = sorted(
-
-                recommendations,
-
-                key=lambda x: x["impact"],
-
+            scenarios = sorted(
+                scenarios,
+                key=lambda x: x["predicted_change"],
                 reverse=True
-
             )
 
 
-            return recommendations
+            # Return only top 3 scenarios
+            return scenarios[:3]
 
 
         except Exception as e:
@@ -326,29 +337,16 @@ class PredictPipeline:
             raise CustomException(e, sys)
 
 
-
-# ==================================================
-# CUSTOM DATA CLASS
-# ==================================================
-
 class CustomData:
 
     def __init__(
-
         self,
-
-        # Numerical Features
-
         hours_studied,
         attendance,
         previous_scores,
         tutoring_sessions,
         sleep_hours,
         physical_activity,
-
-
-        # Categorical Features
-
         motivation_level,
         access_to_resources,
         parental_involvement,
@@ -359,11 +357,7 @@ class CustomData:
         extracurricular_activities,
         peer_influence,
         family_income
-
     ):
-
-
-        # Numerical
 
         self.Hours_Studied = hours_studied
         self.Attendance = attendance
@@ -371,28 +365,15 @@ class CustomData:
         self.Tutoring_Sessions = tutoring_sessions
         self.Sleep_Hours = sleep_hours
         self.Physical_Activity = physical_activity
-
-
-        # Categorical
-
         self.Motivation_Level = motivation_level
         self.Access_to_Resources = access_to_resources
         self.Parental_Involvement = parental_involvement
         self.Internet_Access = internet_access
         self.Teacher_Quality = teacher_quality
-
-        self.Parental_Education_Level = (
-            parental_education_level
-        )
-
+        self.Parental_Education_Level = parental_education_level
         self.School_Type = school_type
-
-        self.Extracurricular_Activities = (
-            extracurricular_activities
-        )
-
+        self.Extracurricular_Activities = extracurricular_activities
         self.Peer_Influence = peer_influence
-
         self.Family_Income = family_income
 
 
@@ -402,62 +383,75 @@ class CustomData:
 
             custom_data_input_dict = {
 
-                "Hours_Studied":
-                    [self.Hours_Studied],
+                "Hours_Studied": [
+                    self.Hours_Studied
+                ],
 
-                "Attendance":
-                    [self.Attendance],
+                "Attendance": [
+                    self.Attendance
+                ],
 
-                "Previous_Scores":
-                    [self.Previous_Scores],
+                "Previous_Scores": [
+                    self.Previous_Scores
+                ],
 
-                "Tutoring_Sessions":
-                    [self.Tutoring_Sessions],
+                "Tutoring_Sessions": [
+                    self.Tutoring_Sessions
+                ],
 
-                "Sleep_Hours":
-                    [self.Sleep_Hours],
+                "Sleep_Hours": [
+                    self.Sleep_Hours
+                ],
 
-                "Physical_Activity":
-                    [self.Physical_Activity],
+                "Physical_Activity": [
+                    self.Physical_Activity
+                ],
 
+                "Motivation_Level": [
+                    self.Motivation_Level
+                ],
 
-                "Motivation_Level":
-                    [self.Motivation_Level],
+                "Access_to_Resources": [
+                    self.Access_to_Resources
+                ],
 
-                "Access_to_Resources":
-                    [self.Access_to_Resources],
+                "Parental_Involvement": [
+                    self.Parental_Involvement
+                ],
 
-                "Parental_Involvement":
-                    [self.Parental_Involvement],
+                "Internet_Access": [
+                    self.Internet_Access
+                ],
 
-                "Internet_Access":
-                    [self.Internet_Access],
+                "Teacher_Quality": [
+                    self.Teacher_Quality
+                ],
 
-                "Teacher_Quality":
-                    [self.Teacher_Quality],
+                "Parental_Education_Level": [
+                    self.Parental_Education_Level
+                ],
 
-                "Parental_Education_Level":
-                    [self.Parental_Education_Level],
+                "School_Type": [
+                    self.School_Type
+                ],
 
-                "School_Type":
-                    [self.School_Type],
+                "Extracurricular_Activities": [
+                    self.Extracurricular_Activities
+                ],
 
-                "Extracurricular_Activities":
-                    [self.Extracurricular_Activities],
+                "Peer_Influence": [
+                    self.Peer_Influence
+                ],
 
-                "Peer_Influence":
-                    [self.Peer_Influence],
-
-                "Family_Income":
-                    [self.Family_Income]
+                "Family_Income": [
+                    self.Family_Income
+                ]
 
             }
-
 
             return pd.DataFrame(
                 custom_data_input_dict
             )
-
 
         except Exception as e:
 
