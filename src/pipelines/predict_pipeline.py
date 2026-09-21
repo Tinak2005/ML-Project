@@ -104,18 +104,6 @@ class PredictPipeline:
                     )
                 ],
 
-                "Previous_Scores": [
-                    min(
-                        features.iloc[0]["Previous_Scores"] + 5,
-                        100
-                    ),
-
-                    min(
-                        features.iloc[0]["Previous_Scores"] + 10,
-                        100
-                    )
-                ],
-
                 "Tutoring_Sessions": [
                     features.iloc[0]["Tutoring_Sessions"] + 1,
                     features.iloc[0]["Tutoring_Sessions"] + 2
@@ -234,16 +222,6 @@ class PredictPipeline:
                 "Teacher_Quality":
                     ["Low", "Medium", "High"],
 
-                "Parental_Education_Level":
-                    [
-                        "High School",
-                        "College",
-                        "Postgraduate"
-                    ],
-
-                "School_Type":
-                    ["Public", "Private"],
-
                 "Extracurricular_Activities":
                     ["Yes", "No"],
 
@@ -253,9 +231,6 @@ class PredictPipeline:
                         "Neutral",
                         "Positive"
                     ],
-
-                "Family_Income":
-                    ["Low", "Medium", "High"]
             }
 
 
