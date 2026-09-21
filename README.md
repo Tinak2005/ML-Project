@@ -30,7 +30,7 @@ The trained Machine Learning model predicts the expected exam score based on stu
 
 ### 🔹 Model-Based Improvement Analysis
 
-The application performs model-based analysis instead of relying on simple hardcoded suggestions.
+The application performs model-based what-if analysis instead of relying on simple hardcoded suggestions.
 
 The system:
 
@@ -43,7 +43,10 @@ The system:
 7. Filters meaningful positive improvements.
 8. Ranks the opportunities according to their predicted impact.
 
-This provides data-driven improvement opportunities based on the behavior of the trained model.
+The system focuses the improvement analysis on factors that can reasonably be considered adjustable, such as study habits, attendance, lifestyle, learning environment, and other relevant student-related factors.
+
+These recommendations represent **model-based what-if analysis** and should not be interpreted as guaranteed causal improvements in actual exam performance.
+
 
 ### 🔹 Responsive Web Interface
 
@@ -56,7 +59,7 @@ The Flask application provides:
 - Performance category.
 - Model-based improvement opportunities.
 - Current value → recommended value comparison.
-- Potential predicted score impact.
+- Predicted impact based on model what-if analysis.
 
 ---
 
